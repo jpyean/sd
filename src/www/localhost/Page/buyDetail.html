@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)http://www.klduobao.com/mobile/GoGoodsMobile_getBatchUserGoHistory?batchId=1276639 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="http://www.klduobao.com/images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—夺宝纪录</title>
+<link rel="icon" href="http://www.klduobao.com/mobile/favicon.ico" type="image/x-icon">
+
+  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+
+   <div class="top">夺宝纪录
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="indiana_details">
+      <div class="goods_name"></div>
+      <div class="pa_pe"><span>本期参与：</span><em class="count">0</em>人次</div>
+      <ul id="numbers" class="details">
+      </ul>
+   </div>
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+
+<script id="numbersTmpl" type="text/x-jquery-tmpl">
+   <li>
+      <div class="time">${order_data_time}</div>
+      <div class="cyrc_jl" style="margin-top:10px;">
+            <div class="cyrc_left"><em class="count" style=" color:#e2105a;">${money}</em>人次</div>
+            <div class="cyrc_right"><a id="myNumber" href="buyNumber.html?id=${order_id}">查看我的号码</a></div>
+         </div>
+   </li>
+</script>
+
+<script type="text/javascript">
+    $.extend($, {
+       // 获取请求参数
+       getReq: function(key) {
+          var url = location.search;
+          if (url.indexOf("?") != -1) {
+             var str = url.substr(1);
+             strs = str.split("&");
+             for (var i = 0; i < strs.length; i++) {
+                this[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+             }
+             return this[key];
+          }
+          return null;
+       }
+    });
+
+    $(function(){
+      $.get("/PhaseQuery/payRecordInfo", {
+        phase_id: $.getReq("id")
+      }, function(resp){
+        $(".goods_name").html("(第" + resp.goods_info.phase + "期)" + resp.goods_info.goods_name;
+        $(".count").html(resp.goods_info.count);
+        $("#numbers").html($("#numbersTmpl").tmpl(resp.infos));
+      }, "json");
+    });
+</script>
+</body></html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.klduobao.com/mobile/GoGoodsMobile_userWinRecord?recordId=21069007 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="http://www.klduobao.com/images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—中奖订单</title>
+<link rel="icon" href="http://www.klduobao.com/mobile/favicon.ico" type="image/x-icon">
+
+  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+<link href="css/mobile_alert.css" rel="stylesheet" type="text/css">
+
+   <div class="top">中奖订单
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="info_display">
+      <ul class="center">
+         <li style="background:#FEFEFE;">
+            <div class="type" style="width: 88px;color: #FF0000;font-size: 16px;">温馨提示：</div>
+            <div class="info">没有收到货物前请勿确认收货，发货时间7天后自动确认收货，长时间未发货；需要延长收货时间点击【延长收货】申请，其他问题都可以联系我们，客服QQ：4006566158(早上9：00-下午17：30 周日休息 可留言)</div>
+         </li>
+      </ul>
+   </div>
+  <!--收货人信息显示-->
+   <div class="info_display">
+      <div class="title">收货人信息</div>
+      <ul id="addressList" class="center">
+      </ul>
+   </div>
+   <div class="padding"> <textarea class="wbk" id="备注"></textarea> </div>
+   <div id="order" class="order_info">
+      <div class="title">订单信息</div> 
+   </div>
+   <!--多变按钮-->
+    <div class="padding" style="display: none;" id="finishOrder"><div class="status_button"><a href="javascript:void(0);">确认收货</a></div></div>
+ 
+	<!--提示信息-->
+	<div class="fixed_l" style="display:none;">
+	  <input type="hidden" id="redirectURL" value="">
+	  <input type="hidden" id="addressId" value="">
+	  <input type="hidden" id="orderstatus" value="">
+	  <div class="ccc"></div>
+	</div>
+
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+<!-- <script type="text/javascript" src="json/winningOrder.js"></script> -->
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+	<li>
+        <div class="type">姓名：</div>
+        <div class="info">${user_name}</div>
+     </li>
+     <li>
+        <div class="type">电话：</div>
+        <div class="info" style=" color:#306cab;">${user_phone}</div>
+     </li>
+     <li>
+        <div class="type">地址：</div>
+        <div class="info">${user_address}</div>
+     </li>
+</script>
+<script id="orderTmpl" type="text/x-jquery-tmpl">
+<ul>
+	<li class="pri">
+	    <div class="pic_goods"><img src="http://img.zailaiyidan.com/${goods_icon}"></div>
+	    <div class="goods_right">
+	       <div class="goods_name" style=" margin:0px;">(第${goods_phase}期)&nbsp;&nbsp;${goods_name}</div>
+	       <div class="zrc"><span>总需：</span>${goods_money}人次</div>
+	       <div class="cyrc_jl">
+	          <div class="cyrc_left"><span>本期参与：</span><em>${user_buy_money}</em>人次</div>
+	          <div class="cyrc_right"><a href="goodDetail?goods_id=${goods_id}&phase=${goods_phase}">查看详情</a></div>
+	       </div>
+	       <div class="clear"></div>
+	       <div class="time_jl"><span>揭晓时间：</span><em style=" color:#999;">${lucky_time}</em></div>
+	    </div>
+	 </li>
+	 
+	 <li>
+	    <div class="type">订单状态</div>
+	    <div class="info" style=" color:#e2105a;">等待收货</div>
+	 </li>
+	 <li>
+	    <div class="type">联系卖家</div>
+	    <div class="info" style=" color:#306cab;">${phone}</div>
+	 </li>
+	 <li>
+	    <div class="type">订单编号</div>
+	    <div class="info" style=" color:#306cab;">${order_id}</div>
+	 </li>
+	 <li>
+	    <div class="type">下单时间</div>
+	    <div class="info">${order_data_time}</div>
+	 </li>
+	 {{if send_good_order != null}}
+	 <li>
+	    <div class="type">发货时间</div>
+	    <div class="info">${send_good_time}</div>
+	    <div class="ckwl" id="has_delayed" style="float:right;display:none;"><a style="color:#FF0000;" href="javascript:void(0)">已经延长7天收货</a></div>
+	 </li>
+	{{/if}}
+</ul>
+{{if send_good_order != null}}
+	<div class="title">物流信息</div>
+	<ul>
+	 <li>
+	    <div class="type">快递公司</div>
+	    <div class="info">${send_good_company}</div>
+	 </li>
+	 <li>
+	    <div class="type">快递单号</div>
+	    <div class="info">${send_good_order}</div>
+	    <div class="ckwl" style=" float:right;"><a style="color:#306cab;" href="http://m.kuaidi100.com/index_all.html?type=shentong&amp;postid=2587755755&amp;callbackurl=http://www.klduobao.com/mobile/GoGoodsMobile_userWinRecord?recordId=21069007">查看物流</a></div>
+	 </li>
+	</ul>
+{{/if}}
+</script>
+<script type="text/javascript">
+$(function(){
+	// 渲染地址信息
+	$("#addressList").html($("#addressTmpl").tmpl(data.order_info));
+	// 渲染订单信息
+	data.order_info.phone = data.shop_info.shop_phone;
+	$("#order").append($("#orderTmpl").tmpl(data.order_info));
+
+	if(data.order_info.send_good_order != null){
+		$("#finishOrder").show();	
+	}
+	//确认收货
+	$('#finishOrder').click(function() {
+		finishOrder();
+	});
+	//延时收货
+	// $('#delayedOrder').click(function() {
+	// 	delayedRecord();
+	// });
+	if($("#orderstatus").val()==4){
+		hasDelayed();
+	}
+	
+});
+
+//选择地址
+function selectAddr(id,index_,size){
+	$('#addressId').val(id);
+	$('.selectImg').attr('src','http://www.klduobao.com/images/mobile/yrz_iocn_no.png'); 
+	$('#addr_img_'+index_).attr('src','http://www.klduobao.com/images/mobile/yrz_iocn.png');
+}
+
+//确认收货
+function finishOrder(){
+	if(confirm("确认您已经收到夺宝的商品？")){
+		var ajaxurl = '/DeliverOrderManager/readyGet'; 
+	    $.ajax({
+			url : ajaxurl,
+			data : {
+				order_id : '21069007'
+			},
+			async : false,
+			cache : false,
+			dataType : "JSON",
+			type : "POST",
+			success : function(dat) {
+				$("#finishOrder").unbind("click");
+				if(dat.code=="success"){
+					$('.ccc').html("已确认收货，正在刷新...");
+					$('.fixed_l').addClass('Box_l');
+					$('.fixed_l').removeClass('SB_l');
+					$('.fixed_l').fadeIn(); 
+					function getOut(){
+						window.location.reload();
+		 			}
+	  				var test = setTimeout(function(){
+	   						 getOut();
+					},600);
+				}else{
+					my_al2(dat.msg);
+				}
+			}
+		}); 
+	}
+}
+//查询是否已经有延时收货
+// function hasDelayed(){
+// 	var ajaxurl = base+'mobile/GoGoodsMobile_hasDelayedRecord'; 
+//     $.ajax({
+// 		url : ajaxurl,
+// 		data : {
+// 			recordId : '21069007'
+// 		},
+// 		async : false,
+// 		cache : false,
+// 		dataType : "JSON",
+// 		type : "POST",
+// 		success : function(dat) {
+// 			if(dat.code=="success"){
+// 				$("#delayedOrder").hide();
+// 				$("#has_delayed").show();
+// 			}else{
+// 				$("#delayedOrder").show();
+// 			}
+// 		}
+// 	}); 
+// }
+//延长收货时间
+// function delayedRecord(){
+// 	if(confirm("确认您需要延长收货时间吗？")){
+// 		var ajaxurl = base+'mobile/GoGoodsMobile_delayedRecord'; 
+// 	    $.ajax({
+// 			url : ajaxurl,
+// 			data : {
+// 				recordId : '21069007'
+// 			},
+// 			async : false,
+// 			cache : false,
+// 			dataType : "JSON",
+// 			type : "POST",
+// 			success : function(dat) {
+// 				$("#finishOrder").unbind("click");
+// 				if(dat.code=="success"){
+// 					$('.ccc').html(dat.msg+"正在刷新...");
+// 					$('.fixed_l').addClass('Box_l');
+// 					$('.fixed_l').removeClass('SB_l');
+// 					$('.fixed_l').fadeIn(); 
+// 					function getOut(){
+// 						window.location.href="http://www.klduobao.com/mobile/GoGoodsMobile_userWinRecord?recordId=21069007"; 
+// 		 			}
+// 	  				var test = setTimeout(function(){
+// 	   						 getOut();
+// 					},3000);
+// 				}else{
+// 					my_al2(dat.msg);
+// 				}
+// 			}
+// 		}); 
+// 	}
+// }
+
+function my_su2(cont){
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').addClass('Box_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},1000);
+}
+	
+function my_al2(cont){
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').addClass('SB_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},2000);
+}
+</script>
+
+</body></html>

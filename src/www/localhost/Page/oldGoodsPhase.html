@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)http://www.klduobao.com/mobile/GoGoodsMobile_showGoGoodsHistory?goodsId=202721 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>夺宝详情</title>
+<link rel="icon" href="" type="image/x-icon">  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+   <!--头部-->
+   <div class="top">商品详情
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+  	 <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="issue">
+      <ul id="batch_list"></ul>
+   </div>
+
+	<!--common begin-->
+	<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<!-- <script type="text/javascript" src="json/oldGoodsPhaseJson.js"></script> -->
+<script>
+$().ready(function(){
+
+	$(".fx").click(function (){
+		$(".fx_sm").show();
+	})
+	$(".fx_sm").click(function (){
+		$(".fx_sm").hide();
+	})
+})
+</script>
+<script type="text/javascript">
+var pagerNo = 1;
+var proIsReq = true;
+$(function(){
+	getOthBatchList(data);
+});
+// 渲染往期记录列表
+function getOthBatchList(dat){ 
+	if(null != dat.goods_phase_infos && dat.goods_phase_infos.length>0){ 
+		$(dat.goods_phase_infos).each(function(index,bean){
+			var html=""; 
+			if(bean.winer_uid == null){
+				html+="<li class='going_an'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase=" + bean.phase + "'>第"+bean.phase+"期<em>请稍后，正在进行......</em></a></li>";
+			}
+			// else if(bean.winer_uid == 1){
+			// 	html+="<li class='going_an'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase=" + bean.phase + "'>第"+bean.phase+"期<em>请稍后，正在揭晓......</em></a></li>";
+			// }
+			else{ 
+				html +="<li class='is_list'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase=" + bean.phase + "'>";
+		        html +="<div class='time'>";    
+		        html +="<div class='nper'>第"+bean.phase+"期</div>";    
+		        html +="<div class='date'>揭晓时间："+bean.lucky_time+"</div>";       
+		        html +="</div></a>";  
+		        var winImage = "images/default_man.png";
+				if(null!=bean.winer_icon&&bean.winer_icon!=''){
+					winImage = (bean.winer_icon);
+				}
+		        html +="<div class='winners'>";  
+		        html +="<div class='user_image'><img src='"+winImage+"' /></div>"; 
+		        html +="<div class='user_information'>";  
+		        var userName = "夺宝用户";   
+		        if(null!=bean.winer_name&&bean.winer_name!=''){
+		       		userName = bean.winer_name;
+		        }
+		        var proDetailUrl="#?userId="+bean.userId;
+		        html +="<div class='user_name'><span style='color:#999'>获奖者：</span><a href='"+proDetailUrl+"'>"+userName+"</a></div>";     
+		        html +="<div class='user_id'><span style='color:#999'>用户ID：</span>"+bean.winer_uid+"</div>";     
+		        html +="<div class='user_rc'><span style='color:#999'>本期参与：</span><span>"+bean.winer_buy_count+"</span>人次</div>";     
+		        html +="<div class='user_hm'><span style='color:#999'>幸运号码：</span><span>"+bean.lucky_coupon+"</span></div>";     
+		        html +="<div class='user_ip'><span style='color:#999'>IP地址：</span><em>（"+bean.winer_ip+"）</em></div>";         
+		        html +="</div>";    
+		        html +="</li>"; 
+			}
+   			$("#batch_list").append(html); 
+		}); 
+	}
+}
+</script>
+
+</body></html>

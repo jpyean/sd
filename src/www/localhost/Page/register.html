@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!-- saved from url=(0116)http://www.klduobao.com/mobile/LoginMobile_reg?redirectURL=http%3A%2F%2Fwww.klduobao.com%2Fmobile%2FUserMobile_index -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+    <meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+    <title>微店购物-注册</title>
+    <link href="css/login_reg.css" rel="stylesheet" type="text/css">
+    <link href="css/mobile_alert.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<!--头部-->
+<div class="top">注册
+    <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+</div>
+<div class="land">
+    <ul>
+        <li style=" border-bottom:1px dotted #eee;">
+            <div class="wor">手机号</div>
+            <input type="text" class="NumDecText" value="" maxlength="11" id="userName" name="userName"
+                   placeholder="请输入手机号">
+        </li>
+        <li>
+            <div class="wor">验证码</div>
+            <input type="password" class="NumDecText" value="" maxlength="6" id="captcha" name="captcha"
+                   placeholder="请输入验证码">
+            <div id="get_regest1"
+                 style=" position:absolute;right:10px;background:#ff535f;padding:0 10px; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;">
+                <a href="javascript:;" style="width:100%; display:block; color:#fff; ">获取验证码</a>
+            </div>
+            <div id="get_regest2"
+                 style=" position:absolute;right:10px;background:#3EC3D5;padding:0 10px; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;display:none;">
+                <a href="javascript:;" style="width:100%; display:block; color:#fff; "><span id="show_minite">60</span>后可重新获取</a>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="land">
+    <ul>
+        <li style=" border-bottom:1px dotted #eee;">
+            <div class="wor">密&nbsp;&nbsp;&nbsp;码</div>
+            <input type="password" value="" maxlength="20" id="password" name="password" placeholder="请输入密码">
+        </li>
+        <li>
+            <div class="wor">确&nbsp;&nbsp;&nbsp;认</div>
+            <input type="password" value="" maxlength="20" id="repassword" name="repassword" placeholder="请再次输入密码">
+        </li>
+    </ul>
+</div>
+<div class="place_an_order" style=" margin:20px 10px;"><a style=" background:#e2105a;" "=""
+    href="javascript:void(0);">注册</a></div>
+<!--提示信息-->
+<div class="fixed_l" style="display:none;">
+    <input type="hidden" id="redirectURL" value="user">
+    <div class="ccc"></div>
+</div>
+<!--提示信息-->
+
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="lib/md5.js"></script>
+<script type="text/javascript">
+    $.extend($, {
+        // 获取请求参数
+        getReq: function (name) {
+            var url = location.search;
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    this[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+                }
+                return this[name];
+            }
+            return null;
+        }
+    });
+    // 注册前页面
+    var reqUrl = $.getReq("redirect_uri");
+    //倒计时数
+    var secs = 0;
+    $().ready(function () {
+        $(".NumDecText").keyup(function () {
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).bind("paste", function () {
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).css("ime-mode", "disabled");
+        //获取验证码
+        $('#get_regest1').click(function () {
+            sendCaptcha();
+        });
+        //执行注册
+        $('.place_an_order').click(function () {
+            doRegest();
+        });
+    });
+
+    //注册
+    function doRegest() {
+        var name = $('#userName').val();
+        var passWord = $('#password').val();
+        var repassWord = $('#repassword').val();
+        var captcha = $('#captcha').val();
+        if (null == name || '' == name || '请输入手机号' == name) {
+            my_al2('手机号不能为空!');
+            return;
+        }
+        var reg = /^0?1[34578]\d{9}$/;
+        if (!reg.test(name)) {
+            my_al2('请输入正确的手机号码!');
+            return;
+        }
+        if (null == captcha || '' == captcha || '请输入验证码' == captcha) {
+            my_al2('验证码不能为空!');
+            return;
+        }
+        if (null == passWord || '' == passWord || '请输入密码' == passWord) {
+            my_al2('密码不能为空!');
+            return;
+        }
+        if (null == repassWord || '' == repassWord || '请再次输入密码' == repassWord) {
+            my_al2('再次输入密码不能为空');
+            return;
+        }
+        if (repassWord != passWord) {
+            my_al2('两次密码输入不一致!');
+            return;
+        }
+        $.ajax({
+            url: '/AccountManager/regist',
+            data: {
+                phone: name,
+                passwords_md5: hex_md5(passWord),
+                vcode: captcha
+            },
+            async: false,
+            dataType: "JSON",
+            cache: false,
+            type: "POST",
+            success: function (dat) {
+                if (dat.code == "success") {
+                    $('.ccc').html(dat.msg + ",正在跳转...");
+                    $('.fixed_l').addClass('Box_l');
+                    $('.fixed_l').removeClass('SB_l');
+                    $('.fixed_l').fadeIn();
+                    setTimeout(function () {
+                        if ('undefined' != reqUrl && null != reqUrl && '' != reqUrl) {
+                            window.location.href = reqUrl;
+                        } else {
+                            window.location.href = "index.html";
+                        }
+                    }, 300);
+                } else {
+                    my_al2(dat.msg);
+                }
+            }
+        });
+    }
+    //发送短信验证码
+    function sendCaptcha() {
+        var name = $('#userName').val();
+        if (null == name || '' == name || '请输入手机号' == name) {
+            my_al2('手机号不能为空');
+            return;
+        }
+        var reg = /^0?1[34578]\d{9}$/;
+        if (!reg.test(name)) {
+            my_al2("请输入正确的手机号");
+            return;
+        }
+        $.ajax({
+            url: '/AccountManager/getVcode',
+            data: {
+                phone: name,
+                phone_is_exist: false
+            },
+            async: false,
+            dataType: "JSON",
+            cache: false,
+            type: "POST",
+            success: function (dat) {
+                if (dat.code == "success") {
+                    secs = 180;
+                    countDownMobile();
+                    $("#get_regest1").hide();
+                    $("#get_regest2").show();
+                    $('#get_regest1').unbind("click");
+                } else {
+                    my_al2(dat.msg);
+                }
+            }
+        });
+    }
+
+    //短信发送倒计时控制
+    function countDownMobile() {
+        $('#show_minite').html(secs);
+        if (--secs > 0) {
+            setTimeout("countDownMobile()", 1000);
+        } else {
+            $("#get_regest1").show();
+            $("#get_regest2").hide();
+            $('#get_regest1').click(function () {
+                sendCaptcha();
+            });
+        }
+    }
+
+    function my_su2(cont) {
+        $('.fixed_l').removeClass('SB_l');
+        $('.fixed_l').removeClass('Box_l');
+        $('.fixed_l').addClass('Box_l');
+        $('.ccc').html(cont);
+        function showAndHide() {
+            $('.fixed_l').fadeOut();
+        }
+
+        $('.fixed_l').fadeIn();
+        var test = setTimeout(function () {
+            showAndHide();
+        }, 1000);
+    }
+    function my_al2(cont) {
+        $('.fixed_l').removeClass('Box_l');
+        $('.fixed_l').removeClass('SB_l');
+        $('.fixed_l').addClass('SB_l');
+        $('.ccc').html(cont);
+        function showAndHide() {
+            $('.fixed_l').fadeOut();
+        }
+
+        $('.fixed_l').fadeIn();
+        var test = setTimeout(function () {
+            showAndHide();
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>

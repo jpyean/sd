@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)http://www.klduobao.com/mobile/GoGoodsMobile_toSubGoRecord?batchId=958335 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>夺宝支付</title>
+<link rel="icon" href="" type="image/x-icon">
+  <!--分享-->
+<link href="css/go_index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	
+   <!--头部-->
+   <div class="top">夺宝详情
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+  	  <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+    
+   <div class="goods">
+      <div class="pic_goods"><img id="goodPic" src=""></div>
+      <div class="goods_right">
+      	<div id="orderInfo"></div>
+         <div class="clear"></div>
+         <div class="cyrc">
+            <div class="n">参与人次</div>
+            <div class="an_jj">
+               <a id="sub_go_renci" href="javascript:void(0);">-</a>
+               <span><input type="text" id="go_renci" class="NumDecText" value="6" name="gocishu"></span>
+               <a id="add_go_renci" href="javascript:void(0);">+</a>
+            </div>
+         </div>
+      </div>
+   </div>
+   
+   <div class="xd_nav">
+      <div class="sm">共1件奖品，共计：<span id="pay_money">6</span>元</div>
+      <div id="sub_record" class="js"><a href="javascript:void(0);">去支付</a></div>
+   </div>
+   
+   <div class="fx_sm" style="display:none;background: rgba(0,0,0,0.5);"></div>
+   <div class="playing_field" style="display:none;">
+   	  <input type="hidden" id="one_money" value="1" name="one_money">
+      <div class="title">是否删除</div>
+      <div class="an">
+         <div class="qx"><a href="javascript:;">取消</a></div>
+         <div class="cz"><a href="javascript:;">确认</a></div>
+      </div>
+   </div>
+
+
+<!--common begin-->
+	<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<!-- <script type="text/javascript" src="json/cartJson.js"></script> -->
+<script>
+$().ready(function(){
+
+	$(".fx").click(function (){
+		$(".fx_sm").show();
+	})
+	$(".fx_sm").click(function (){
+		$(".fx_sm").hide();
+	})
+})
+</script>
+<script type="text/javascript">
+$.extend($, {
+	// 获取请求参数
+	getReq: function(name) {
+		var url = location.search;
+		if (url.indexOf("?") != -1) { 
+			var str = url.substr(1); 
+			strs = str.split("&"); 
+			for(var i = 0; i < strs.length; i++){ 
+				this[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]); 
+			}
+			return this[name];
+	   } 
+	   return null; 
+	}
+});
+// 包尾
+if($.getReq("all") && $.getReq("all") == "true"){
+	$("#go_renci").val(data.coupon_count);
+  $('#pay_money').html(data.coupon_count);
+}
+
+var pagerNo = 1;
+var proIsReq = true;
+var shengyucishu = Number($('#shengyucishu').html());  // 剩余购买次数
+$(function(){
+	// 渲染商品信息
+	renderOrderInfo();
+	//限制输入非数字
+	$(".NumDecText").keyup(function(){    
+            $(this).val($(this).val().replace(/[^0-9.]/g,''));    
+        }).bind("paste",function(){   
+            $(this).val($(this).val().replace(/[^0-9.]/g,''));     
+    }).css("ime-mode", "disabled"); 
+    
+    //减少购买人次
+	$('#sub_go_renci').click(function() {
+		var goRenci = Number($('#go_renci').val());
+		var oneMoney = Number($('#one_money').val());
+		if(shengyucishu<=oneMoney){
+			return;
+		}
+		if (oneMoney >= goRenci) {
+			$('#go_renci').val(oneMoney);
+			$('#pay_money').html(oneMoney);
+			return;
+		}
+		goRenci = goRenci - oneMoney;
+   		if((goRenci%oneMoney)!=0){
+   			goRenci = (parseInt(goRenci/oneMoney)+1)*oneMoney;
+   		}
+		$('#go_renci').val(goRenci);
+		$('#pay_money').html(goRenci);
+	});
+	//增加购买人次
+	$('#add_go_renci').click(function() { 
+		var goRenci = Number($('#go_renci').val());
+		var oneMoney = Number($('#one_money').val());
+		if (goRenci>=shengyucishu) {
+			return false;
+		}
+		goRenci = goRenci +oneMoney;
+		if (goRenci>=shengyucishu) {
+			$('#go_renci').val(shengyucishu);
+			$('#pay_money').html(shengyucishu);
+			return;
+		}
+		$('#go_renci').val(goRenci);
+		$('#pay_money').html(goRenci);
+	});
+	//购买次数输入变化时候
+	$('#go_renci').blur(function(){
+   		var goRenci = Number($('#go_renci').val());
+   		var oneMoney = Number($('#one_money').val());
+   		if((goRenci%oneMoney)!=0){
+   			goRenci = (parseInt(goRenci/oneMoney)+1)*oneMoney;
+   		}
+		if (goRenci>=shengyucishu) {
+			$('#go_renci').val(shengyucishu);
+			$('#pay_money').html(shengyucishu);
+		}else if(goRenci<=oneMoney){
+			$('#go_renci').val(oneMoney);
+			$('#pay_money').html(oneMoney);
+		}else{
+			$('#go_renci').val(goRenci);
+			$('#pay_money').html(goRenci);
+		}
+	});
+	//提交订单
+	$('#sub_record').click(function(){ 
+		//alert("系统繁忙，请10分钟后再试试！");
+		subGoRecord(); 
+	});
+});
+function renderOrderInfo(){
+	var html = '<div class="goods_name">（第' + data.phase + ' 期）' + data.goods_info.goods_name + '</div>'
+	         	 + '<div class="m">'
+	             + '<div class="zrc">总需：' + data.goods_info.goods_money + '人次</div>'
+	             + '<div class="yrc">剩余：<span>' + data.coupon_count + '</span>人次</div>'
+         	 + '</div>';
+	$("#orderInfo").html(html);
+	$("#goodPic").attr("src", "http://img.zailaiyidan.com/" + data.goods_info.goods_icons);
+}
+//提交订单
+function subGoRecord(){
+    var goRenci = Number($('#go_renci').val());
+    var shengyucishu = Number($('#shengyucishu').html());
+    var oneMoney = Number($('#one_money').val());
+    if(goRenci>shengyucishu||goRenci<=0){
+        alert("请输入正确的参与人次");
+        return ;
+    }
+    if(shengyucishu>goRenci){
+        if((goRenci%oneMoney)!=0){
+            alert("请输入正确的参与人次");
+            return ;
+        }
+    }
+    $('#sub_record').unbind('click');//解除绑定函数
+    var ajaxurl = '/OrderManager/createOrder';
+    $.ajax({
+        url : ajaxurl,
+        data : {
+            shop_id : data.goods_info.shop_id,
+            goods_id : data.goods_info.goods_id,
+            phase_id : data.phase_id,
+            want_money :  goRenci
+        },
+        async : false,
+        cache : false,
+        dataType : "JSON",
+        type : "POST",
+        success : function(resp) {
+            if(resp.code=='success'){
+              pay(resp.params);
+            }else{
+                alert(resp.msg);
+                $('#sub_record').click(function(){
+                    subGoRecord();
+                });
+            }
+        }
+    });
+}
+
+// 微信支付
+function onBridgeReady(params){
+   WeixinJSBridge.invoke(
+       'getBrandWCPayRequest', params,
+       function(res){     
+           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+              window.location.href = "myRecord.html";
+           }else{
+              $('#sub_record').click(function(){
+                  subGoRecord();
+              });
+              window.location.href = "payFail.html";
+           }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+       }
+   ); 
+}
+function pay(params){
+  if (typeof WeixinJSBridge == "undefined"){
+     if( document.addEventListener ){
+         document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+     }else if (document.attachEvent){
+         document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+         document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+     }
+  }else{
+     onBridgeReady(params);
+  }
+}
+</script>
+
+</body></html>

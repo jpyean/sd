@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)http://www.klduobao.com/mobile/GoGoodsMobile_userGorecordList -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—夺宝纪录</title>
+<link rel="icon" href="" type="image/x-icon">
+  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+
+  <div class="top">夺宝纪录
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+   	  <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="record_nav hts">
+      <ul id="nav">
+         <li><a type="all" class="current">全部</a></li>
+         <li><a type="ing">进行中</a></li>
+         <li><a type="over">已揭晓</a></li>
+      </ul>
+   </div>
+   <div class="indiana_record">
+      <ul id="record_list"></ul>
+   </div>
+   
+   <div class="padding">
+   <div class="more_records" style="display: none;"><a style="color:#000;" href="javascript:void(0);">更多记录</a></div>
+   </div>
+   <div style="height:70px;"></div>
+   
+
+<!--common begin-->
+  <script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+<script>
+$().ready(function(){
+  $(".fx").click(function (){
+    $(".fx_sm").show();
+  })
+  $(".fx_sm").click(function (){
+    $(".fx_sm").hide();
+  })
+})
+</script>
+<script type="text/javascript">
+var type = "all";
+$("#nav").on("click", "a", function(){
+	type = this.attributes.type.nodeValue;
+	$("#nav").find("a").removeClass("current");
+	$(this).addClass("current");
+	$("#record_list").html(""); 
+	getUserRecordList();
+});
+var pagerNo = 1;
+$(function(){
+	//调用异步读取往期列表
+	getUserRecordList();
+	//判断用户是否已经绑定手机号
+	// getUserIsVerify();
+	//更多按钮
+	// $(".more_records").click(function() {
+	// 	getUserRecordList();
+	// });
+    var topMain=$(".record_nav").height()+$(".top").height()//是头部的高度加头部与nav导航之间的距离
+    var nav=$(".record_nav");
+    $(window).scroll(function(){
+	    if ($(window).scrollTop()>topMain){//如果滚动条顶部的距离大于topMain则就nav导航就添加类.nav_scroll，否则就移除
+	   		 nav.addClass("record_nav_fixed");
+			 $(".record_nav_fixed").hide();
+			 $(".record_nav").show();
+	    }else{
+	   		 nav.removeClass("record_nav_fixed");
+			 $(".record_nav").show();
+			 $(".record_nav_fixed").hide();
+	    }
+    });
+});
+//异步读取往期列表
+var OSS_PATH = "http://img.zailaiyidan.com/";
+function getUserRecordList(){ 
+		var ajaxurl = '/PhaseQuery/queryUidPayRecord'; 
+	     $.ajax({
+				url : ajaxurl,
+				data : {
+					type : type
+				},
+				dataType : "JSON",
+				type : "GET",
+				success : function(dat) {
+// 					dat = {
+//   "infos": [
+//     {
+//       "phase_record_id": "1-1-2",
+//       "uid": "2",
+//       "phase_id": "1-1",
+//       "pay_total_coupon": "5548",                       //总共购买的次数
+//       "type": "1",
+//       "goods_id": "1",
+//       "phase": "1",
+//       "shop_id": "1",
+//       "need_money": "7548",                             //奖期总次数
+//       "now_money": "7548",                              //奖期已被购买的次数
+//       "winer_uid": "1",
+//       "lucky_time": "2017-04-12 04:26:30",
+//       "lucky_coupon": "10001290",
+//       "winer_address": "本地",
+//       "winer_ip": "127.0.0.1",
+//       "winer_buy_count": "2000",
+//       "lucky_order_id": "2017041216251810001",
+//       "winer_name": "tmtbe",
+//       "winer_icon": "images/YMXXXX14090940-5748_100X100.jpg",
+//       "goods_icons": "images/YMXXXX28138171-320138_YM0000.jpg",                 //奖品信息
+//       "is_show": null,
+//       "goods_now_phase": "2",
+//       "goods_name": "iphone7",
+//       "goods_desc": "这是一台iPhone7",
+//       "goods_money": "7548",
+//       "max_phase": "100"
+//     }
+//   ],
+//   "code": "success"
+// }
+					if(dat.code=="success"){
+						proIsReq=false;
+						if(null != dat.infos && dat.infos.length>0){ 
+							$(dat.infos).each(function(index,bean){
+								var html=""; 
+								if(type== "all"){
+							        html+="<li>";
+							        html+="<div class='pic_goods'><a href='goodDetail?goods_id="+bean.goods_id+"'><img src='" + OSS_PATH + bean.goods_icons+"' width='100px' height='100px'/></a></div>";
+							        html+="<div class='goods_right'>";
+							        html+="<div class='goods_name'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase="+bean.phase+"'>(第"+bean.phase+"期)"+bean.goods_name+"</a></div>";
+							        html+="<div class='w-progressBar'>";
+							        html+="<p class='w-progressBar-wrap'>";
+							        html+="<span class='w-progressBar-bar' style='width:"+((bean.now_money)/bean.need_money)*100+"%;'></span>";
+							        html+="</p>";
+							        html+="<ul>";
+							        html+="<li class='total'>总需"+bean.need_money+"人次</li>";
+							        html+="<li class='surplus'>剩余<span>"+(bean.need_money - bean.now_money)+"</span>人次</li>";
+							        html+="</ul>";
+							        html+="</div>";
+							        html+="<div class='cyrc_jl'>";
+							        html+="<div class='cyrc_left'><span>本期参与：</span><em>"+bean.pay_total_coupon+"</em>人次</div>";
+							        html+="<div class='cyrc_right'><a href='buyDetail.html?id="+bean.phase_id + "'>查看详情</a></div>";
+							        html+="</div>";
+							        html+="</div>";
+							        html+="</li>";
+								}else if(type== "ing"){
+									 html+="";
+							         html+="<li>";
+							         html+="<div class='pic_goods'><a href='goodDetail?goods_id="+bean.goods_id+"'><img src='" + OSS_PATH +bean.goods_icons+"' width='100px' height='100px'/></a></div>";
+							         html+="<div class='goods_right'>";
+							         html+="<div class='goods_name'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase="+bean.phase+"'>(第"+bean.phase+"期)"+bean.goods_name+"</a></div>";
+							         html+="<div class='zrc'><span>总需：</span>"+bean.need_money+"人次</div>";
+							         html+="<div class='cyrc_jl'>";
+							         html+="<div class='cyrc_left'><span>本期参与：</span><em>"+bean.pay_total_coupon+"</em>人次</div>";
+							         html+="<div class='cyrc_right'><a href='buyDetail.html?id="+bean.phase_id + "'>查看详情</a></div>";
+							         html+="</div>";
+							         html+="<div class='clear'></div>";
+							         html+="<div class='time_jl'><span>揭晓时间：</span><em>正在计算，请稍后</em></div>";
+							         html+="</div>";
+							         html+="</li>";
+								}else{ 
+							        html+="<li>";
+							        html+="<div class='pic_goods'><a href='goodDetail?goods_id="+bean.goods_id+"'><img src='" + OSS_PATH +bean.goods_icons+"' width='100px' height='100px'/></a></div>";
+							        html+="<div class='goods_right'>";
+							        html+="<div class='goods_name'><a style='color:#000;' href='goodDetail?goods_id="+bean.goods_id+"&phase="+bean.phase+"'>(第"+bean.phase+"期)"+bean.goods_name+"</a></div>";
+							        html+="<div class='zrc'><span>总需：</span>"+bean.need_money+"人次</div>";
+							        html+="<div class='cyrc_jl'>";
+							        html+="<div class='cyrc_left'><span>本期参与：</span><em>"+bean.pay_total_coupon+"</em>人次</div>";
+							        html+="<div class='cyrc_right'><a href='buyDetail.html?id="+bean.phase_id + "'>查看详情</a></div>";
+							        html+="</div>";
+							        html+="<div class='clear'></div>";
+							        html+="<div class='winner_jl'>";
+							        html+="<div class='user_information'>";
+							        var winer_icon ="images/default_man.png"; 
+							        if(null!=bean.winer_icon&&bean.winer_icon!=''){
+							        	winer_icon = (bean.winer_icon);
+							        }
+									var proDetailUrl="?winer_uid="+bean.winer_uid;
+									var name="";
+									if(null!=bean.winer_name&&bean.winer_name!=''){
+										name=bean.winer_name;
+									}
+									name+="(id:"+bean.winer_uid+")";
+							        html+="<div class='user_name'><span style='color:#999'>获奖者：</span><a href='"+proDetailUrl+"'>"+name+"</a></div>";
+							        html+="<div class='user_rc'><span style='color:#999'>本期参与：</span><em>"+bean.winer_buy_count+"</em>人次</div>";
+							        html+="<div class='user_hm'><span style='color:#999'>幸运号码：</span><em>"+bean.lucky_coupon+"</em></div>";
+							        html+="<div class='user_id'><span style='color:#999'>揭晓时间：</span>"+bean.lucky_time+"</div>";
+							        html+="</div>";
+							        html+="</div>";
+							        html+="</div>";
+							        html+="</li>";
+								}
+					   			$("#record_list").append(html); 
+							}); 
+						}
+					}
+				}
+		}); 
+	}
+//判断用户是否已经完成手机绑定	
+// function getUserIsVerify(){
+// 	var ajaxurl = 'mobile/GoGoodsMobile_getIsVerify'; 
+// 	$.ajax({
+// 		url : ajaxurl,
+// 		data : {},
+// 		async : false,
+// 		cache : false,
+// 		dataType : "JSON",
+// 		type : "POST",
+// 		success : function(dat) {
+// 			if(dat.code==-1){
+// 				if(confirm("您还没有绑定手机号码，用于接收中奖短信，现在就去绑定吗？")){
+// 					var currentUrl=encodeURIComponent(window.location.href);
+// 					window.location.href= "http://www.klduobao.com/mobile/UserMobile_bandingMobile?redirectURL="+currentUrl;
+// 			    }else{
+// 			    	return;
+// 			    }
+// 			}	
+// 		}
+// 	}); 
+// }
+</script>
+
+</body></html>

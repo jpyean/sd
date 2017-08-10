@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- saved from url=(0080)http://www.klduobao.com/mobile/GoGoodsMobile_showRecordGocodes?recordId=21069007 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="http://www.klduobao.com/images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—夺宝纪录</title>
+<link rel="icon" href="http://www.klduobao.com/mobile/favicon.ico" type="image/x-icon">
+
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+
+   <div class="top">夺宝纪录
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+   	  <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+  <div class="indiana_details">
+      <div class="goods_name" style="background:#f5f5f5;"></div>
+      <div class="pa_pe" style="background:#f5f5f5;"><span>本期参与了</span><em id="count">0</em>人次,&nbsp;&nbsp;以下是夺宝号码：</div>
+      <ul id="number" class="number">
+      </ul> 
+   </div>
+
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+$.extend($, {
+   // 获取请求参数
+   getReq: function(key) {
+      var url = location.search;
+      if (url.indexOf("?") != -1) {
+         var str = url.substr(1);
+         strs = str.split("&");
+         for (var i = 0; i < strs.length; i++) {
+            this[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+         }
+         return this[key];
+      }
+      return null;
+   }
+});
+$.get("/PhaseQuery/payRecordCoupons", {
+  order_id: $.getReq("id")
+}, function(data) {
+  var info = data.goods_info;
+  $(".goods_name").html("(第" + info.phase + "期)" + info.goods_name);
+  $("#count").html(info.count);
+  data.coupons.forEach(function(item) {
+    $("#number").append("<li>" + item + "</li>");
+  });
+}, "json");
+</script>
+
+</body></html>

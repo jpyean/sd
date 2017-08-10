@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)http://www.klduobao.com/mobile/AddressMobile_addressList -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—收货地址</title>
+<link rel="icon" href="" type="image/x-icon">
+
+</head><body><link href="css/member_index.css" rel="stylesheet" type="text/css">
+<link href="css/mobile_alert.css" rel="stylesheet" type="text/css">
+
+
+   <div class="top">我的地址
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style="width:90px;"><a href="addAddress.html">添加地址</a></div>
+   </div>
+   
+   <div class="address_list">
+      <ul id="addressUL">
+      </ul>
+   </div>
+   
+	<div class="fixed_l" style="display:none;">
+	  <input type="hidden" id="redirectURL" value="">
+	  <div class="ccc"></div>
+	</div>
+
+	<!--common begin-->
+	<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+	<!-- <script type="text/javascript" src="json/addressJson.js"></script>
+	<script type="text/javascript" src="json/userInfo.js"></script> -->
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+	<li>
+         <div class="list_top">
+            <div class="own_name">${user_name}</div>
+            <div class="telephone">${user_phone}</div>
+			<div class="sc" style="float:right;"><a href="javascript:deleteAdress(${address_id});" style=" padding:0 20px; padding-right:0px; display:block;color:#e2105a; font-size:14px;">删除</a></div>
+
+         	{{if userInfo.address_id == address_id}}
+             <div class="bj" style="float:right;"><a href="updateAddress.html?id=${address_id}&username=${username}&phone=${user_phone}&address=${enAddress}&normal=${true}" style=" padding:0 20px; display:block;color:#e2105a; font-size:14px;">查看</a></div>
+         	{{else}}
+             <div class="bj" style="float:right;"><a href="updateAddress.html?id=${address_id}&username=${username}&phone=${user_phone}&address=${enAddress}" style=" padding:0 20px; display:block;color:#e2105a; font-size:14px;">查看</a></div>
+             {{/if}}
+         </div>
+         <div class="clear"></div>
+         <div class="own_address">
+         	{{if userInfo.address_id == address_id}}
+             <span>[默认地址]</span>
+             {{/if}}
+             ${user_address}
+         </div>
+      </li>
+</script>
+
+<script type="text/javascript">
+$(function(){
+	data.address_infos.forEach(function(item, i){
+		item["enAddress"] = encodeURI(encodeURI(item["user_address"]));
+		item["username"] = encodeURI(encodeURI(item["user_name"]));
+	});
+	// 渲染地址列表
+	$("#addressUL").html($("#addressTmpl").tmpl(data.address_infos));
+});
+//删除地址
+function deleteAdress(id){ 
+   if(confirm("确认删除地址")){
+		var ajaxurl = '/AccountManager/removeAddress';
+	    $.ajax({
+			url : ajaxurl,
+			data : {
+				address_id : id
+			},
+			async : false,
+			cache : false,
+			dataType : "JSON",
+			type : "POST",
+			success : function(dat) {
+				if(dat.code == "success"){
+					my_su2("删除成功");
+					window.location.reload();
+				}else{
+					my_al2(dat.msg);
+				}
+			}
+		}); 
+	}
+}
+
+
+function my_su2(cont){
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').addClass('Box_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},1000);
+}
+	
+function my_al2(cont){
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').addClass('SB_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},2000);
+}
+</script>
+
+</body></html>

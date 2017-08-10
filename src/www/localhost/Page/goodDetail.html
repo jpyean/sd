@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)http://www.klduobao.com/mobile/GoGoodsMobile_goGoodsDetail?goodsId=202721 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title></title>
+<link href="css/go_index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<!--头部-->
+	<div class="top">商品详情
+		<div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+		<div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+	</div>
+	<!-- 物品信息 -->
+	<div id="goodInfo"></div>
+	<!--没有参加显示-->
+	<div class="not_in"><span>您没有参加本期夺宝</span></div>
+	<!--获奖者-->
+	<div id="winner"></div>
+	<!--参加号码-->
+	<div class="own_No" style="display:none;">
+		<p>您参与了：<span id="go_renci">0</span> 人次</p>
+		<!-- <ul id="go_codes">
+			<li>夺宝号码：</li>
+		</ul> -->
+	</div>
+
+	<!--li列表-->
+	<div class="list">
+		<ul>
+			<li id="recordDetail"><a href="javascript:;">图文详情</a></li>
+			<li id="oldGoodsPhase"><a href="javascript:;">往期获奖</a></li>
+			<li id="shopndex"><a href="javascript:;">全部夺宝商品</a></li>
+		</ul>
+	</div>
+	<!--下载微店-->
+	<!-- <div class="list_shop">
+		<ul>
+			<li style="border-bottom:none;"><a href="http://www.klduobao.com/godownload/mobile/download.html" style="color:#e2105a;">我也开夺宝微店</a></li>
+		</ul>
+	</div> -->
+	<div class="record">所有参与记录</div>
+	<div class="record_list">
+		<!--<div class="time_record">2015-08-19</div>-->
+		<ul id="go_record_list">
+		</ul>
+	</div>
+	<div class="padding" style="padding: 10px 0px;">
+		<div class="more_records"><a href="javascript:void(0);">更多记录</a></div>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="blank"></div>
+	<div class="bottom">
+		<ul id="footer">
+			<li class="rule"><em></em><a href="rule.html">夺宝规则</a></li>
+		</ul>
+	</div>
+	<link rel="icon" href="" type="image/x-icon">
+	<!--common begin-->
+	<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+	<!-- <script type="text/javascript" src="json/good_data.js"></script>
+	<script type="text/javascript" src="json/userInfo.js"></script> -->
+<!-- 物品信息模板 -->
+<script id="goodTmpl" type="text/x-jquery-tmpl">
+	<!--图片-->
+	<div class="banner">
+		<img src="http://img.zailaiyidan.com/${goods_info.goods_icons}">
+	</div>
+	<!--名称-->
+	<div class="name">（第${goods_phase_info.phase} 期）${goods_info.goods_name} 
+		{{if goods_phase_info.winer_uid != null}}
+			<div class="zt yjs"><a href="javascript:void(0);">已结束</a></div>
+			{{else}}
+			<div class="zt jxz"><a href="javascript:void(0);">进行中</a></div>
+		{{/if}}
+	</div>
+	<!--进度条-->
+	<div class="w-progressBar">
+		<p class="w-progressBar-wrap">
+			<span class="w-progressBar-bar" style="width: ${goods_phase_info.now_money / goods_phase_info.need_money * 100 }%;"></span>
+		</p>
+		<ul>
+			<li class="total">总需${goods_phase_info.need_money}人次</li>
+			<li class="surplus">剩余<span>${goods_phase_info.need_money - goods_phase_info.now_money}</span>人次</li>
+		</ul>
+	</div>
+</script>
+<!-- 获奖者信息模板 -->
+<script id="winnerTmpl" type="text/x-jquery-tmpl">
+	<div class="prize_winner">
+		<!--本期开奖信息-->
+		<div class="pri">
+		{{if last}}
+			<div style=" position:absolute; right:20px; top:0px;"><img src="images/sqjx_img.png" width="20" height="71"></div>
+		{{/if}}
+			<div class="user_image">
+				<img src="${winer_icon}">
+			</div>
+			<div class="user_information">
+				<div class="user_name">获奖者：&nbsp;<a href="">${winer_name}</a></div>
+				<div class="user_id">用户ID：&nbsp;${winer_uid}</div>
+				<div class="user_id">参与人次：&nbsp;${winer_buy_count}</div>
+				<div class="user_time">揭晓时间：&nbsp;${lucky_time}</div>
+			</div>
+			<div class="winning_icon"><img src="images/winning_icon.png" width="50" height="50"></div>
+		</div>
+		<!--获奖号码-->
+		<div class="award_No">
+			<div class="awrd_sz">幸运号码：${lucky_coupon}</div>
+			<div class="computational_details">
+				<a href="countDetail?goods_id=${goods_id}&phase=${phase}">计算详情</a>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+var pagerNo = 1;
+var proIsReq = true;
+$(function(){
+	document.title = data.goods_info.goods_name + "-（第" + data.goods_phase_info.phase + "期）";
+	// 渲染商品信息模板
+	$("#goodInfo").html($("#goodTmpl").tmpl(data));
+	// 判断是否已开奖
+	if(data.goods_phase_info.winer_uid != null){
+		// 渲染获奖者信息模板
+		$("#winner").html($("#winnerTmpl").tmpl(data.goods_phase_info));
+		// 判断还有没有下一期
+		if(data.goods_info.left_phase > 0){
+			var html = '<li class="buy_now"><a href="goodDetail?goods_id='
+					 + data.goods_phase_info.goods_id + '&phase=' + (Number(data.goods_phase_info.phase) + 1) + '">前往下一期</a></li>';
+			$("#footer").append(html);
+		}else{
+			var html = '<li class="buy_now"><a href="javascript:void(0);">夺宝已结束</a></li>';
+			$("#footer").append(html);
+		}
+	}else{
+		// 判断是否有上一期开奖记录
+		if(data.last_phase_info && data.last_phase_info != null){
+			data.last_phase_info.last = true;
+			$("#winner").html($("#winnerTmpl").tmpl(data.last_phase_info));
+		}
+		var html = '<li class="buy_now" style="color:#e2105a;font-size:18px;">￥1&nbsp;&nbsp;'
+					 + '<a style="font-size:14px;padding: 10px 10px;" href="cart?goods_id=' + data.goods_phase_info.goods_id
+					 	+ '&phase=' + data.goods_phase_info.phase + '">立即购买</a>&nbsp;&nbsp;'
+					 + '<a style="font-size:14px;background: #0bb01e;padding: 10px 10px;" href="cart?goods_id=' + data.goods_phase_info.goods_id
+					 	+ '&phase=' + data.goods_phase_info.phase + '&all=true">包&nbsp;&nbsp;尾</a>'
+				 + '</li>';
+		$("#footer").append(html);
+	}
+
+	//读取用户购买信息
+	getUserGoInfo();
+	//读取购买记录
+	getOthRecordList(data.order_infos);
+	//更多按钮
+	$(".more_records").click(function() {
+		if(!proIsReq){
+			return ;
+		}
+		$.get("/PhaseQuery/queryPhaseOrderRecord", {
+			phase_id: data.goods_phase_info.phase_id,
+			limit: 20,
+			page: pagerNo
+		}, function(data){
+			getOthRecordList(data);
+		});
+	});
+	// 图文详情按钮
+	$("#recordDetail").click(function(){
+		window.location.href = "recordDetail?goods_id=" + data.goods_phase_info.goods_id;
+	});
+	// 往期获奖记录按钮
+	$("#oldGoodsPhase").click(function(){
+		window.location.href = "oldGoodsPhase?goods_id=" + data.goods_phase_info.goods_id;
+	});
+	// 商店首页按钮
+	$("#shopndex").click(function(){
+		window.location.href = "shopIndex?shop_id=" + data.shop_info.shop_id;
+	});
+});
+function getOthRecordList(dat){ 
+	if(null != dat && dat.length>0){ 
+		$(dat).each(function(index,bean){
+			var image = "images/default_man.png";
+			if(null!=bean.user_icon && bean.user_icon !='' && bean.user_icon != "null"){
+				image = (bean.user_icon);
+			}
+			var name="";
+			if(null!=bean.user_name&&bean.user_name!=''){
+				name=bean.user_name;
+			}
+			name+="(id:"+bean.uid+")"
+			var html=""; 
+			html +="<li>";
+			html +="<div class='list_pic'><img src='"+image+"' width='40' height='40'/></div>";    
+			html +="<div class='user_information'>";    
+			html +="<div class='user_name'><a style='color:#2333E3;' href='javascript:;'>"+name+"</a></div>";       
+			html +="<div class='user_id'>"+ bean.ip_address + " :" + bean.ip+"</div>";       
+			html +="<div class='user_time'>参与了<span>"+bean.money+"</span>人次"+bean.order_data_time+"</div>";       
+			html +="</div>";    
+			html +="</li>"; 
+			$("#go_record_list").append(html); 
+			pagerNo++;
+		}); 
+		if(dat.length < 20){
+			$(".padding").hide();
+			proIsReq=false;
+		}else{
+			$(".padding").show();
+			proIsReq=true;
+		} 
+	}
+}
+//获取当前用户的购买信息
+function getUserGoInfo(){
+	// var dat = {"code":"-1","msg":"没有登录"}
+	if(data.my_buy_count != "0" && data.my_buy_count != ""){
+		$("#go_renci").html(data.my_buy_count);	
+		$(".own_No").show();
+		$(".not_in").hide();
+	}else{
+		$(".own_No").hide(); 
+		$(".not_in").show();
+	}
+}
+</script>
+<script type="text/javascript" src="lib/jquery.cookie.js"></script>
+<!-- <script type="text/javascript">uVisitor('http://www.klduobao.com/','1704748');</script> -->
+
+
+</body></html>

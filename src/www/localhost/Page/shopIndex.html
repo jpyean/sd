@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!-- saved from url=(0087)http://www.klduobao.com/mobile/GoGoodsMobile_shopGoGoods?shopId=1704748&orderCode=renqi -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="http://www.klduobao.com/http://www.klduobao.com/images/yiyuangou/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>夺宝店铺-龟百度</title>
+<link href="css/go_shop.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+   <!--头部-->
+   <!--<div class="top">一元夺宝
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="http://www.klduobao.com/images/yiyuangou/fh_icon3.png" width="48" height="48" /></a></div>
+   </div>-->
+   <!--logo-->
+   <div class="head_box">
+       <div class="top_bg">
+          <div id="shopWrap" class="per_inf">
+          </div>
+          <div class="per_button" id="yaoqing">
+             <ul>
+                <li><a href="javascript:void(0);" id="fenxiang">邀请小伙伴一起</a></li>
+             </ul>
+          </div>
+          <div class="per_button" id="qrcode" style="display:none;">
+             <ul>
+                <li><a href="javascript:void(0);">加入夺宝群</a></li>
+             </ul>
+          </div>
+
+   </div>
+   
+   <div class="stuff_box">
+      <div class="com_con">
+         <ul id="go_goods_list"></ul>
+      </div>
+   </div>
+   <div style="height:100px;"></div>
+   <!--<div class="open_advert">
+      <a href="http://www.klduobao.com/godownload/mobile/download.html"><img src="http://www.klduobao.com/images/yiyuangou/open_advert_img.png" /></a>
+   </div>-->
+   <div class="close"><a href="javascript:void(0);"><img src="images/close_button.png" width="40px" height="40"></a></div>
+   <div class="fx_sm" id="fx_sm_div" style=" display:none;"><div style=" padding:0 20px;"><img id="fenxiang_img" src="images/fx_sm.png"></div></div>
+   <div class="fx_sm" id="qrcode_div" style="display:none;">
+      <div style=" padding:20px;">
+         <div style="padding:30px; background:#fff;">
+            <img id="qrcode_img" src="http://www.klduobao.com/mobile/GoGoodsMobile_shopGoGoods?shopId=1704748&amp;orderCode=renqi">
+            <p style="font-size:16px; line-height:36px;" id="rqcode_name">微信群二维码</p>
+            <p style="font-size:14px; color:#999;">（长按扫描二维码）</p>
+            <span style=" width:50%; margin:0 auto;margin-top:20px; display:block;"><a id="close_qrcode" style="color:#666;  background:#ddd; width:100%; display:block; padding:10px;-moz-border-radius:30px; -webkit-border-radius:30px; border-radius:30px; font-size:16px; " href="javascript:void(0);">关闭</a></span>
+         </div>
+      </div>
+   </div>
+   <!--导航栏--> 
+   <div style="height:100px;"></div>
+   <!--导航开始-->
+    <div class="index_nav" id="go_navigation">
+       <ul>
+          <li class="square">
+             <a class="click" href="">首页</a>
+          </li>
+          <li class="my">
+             <a href="user"> 个人中心</a>
+          </li>
+       </ul>
+    </div>
+    <!--导航结束-->
+<link rel="icon" href="" type="image/x-icon">
+</div>
+
+<!--common begin-->
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="lib/jquery.lazyload.js"></script>
+	<!-- <script type="text/javascript" src="json/shopIndex.js"></script> -->
+<script type="text/javascript">
+var pagerNo = 1;
+var proIsReq = true;
+$(function(){
+	// 渲染店铺信息
+	var shopHtml = '<div class="pic"><img src="http://img.zailaiyidan.com/' + data.shop_info.shop_icon +'"></div>'
+	            	 + '<div class="per_rig">'
+	                 + '<div class="name">' + data.shop_info.shop_name +'</div>'
+	                 + '<div class="wx">微信号：' + data.shop_info.wid +'</div>'
+                 + '</div>';
+	$("#shopWrap").html(shopHtml);
+	//load();
+	function load(){
+		var u = navigator.userAgent, app = navigator.appVersion;
+		var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+		if(isiOS){
+			$('.open_advert').hide();
+		}
+	}
+	getOthRecordList();
+	lazyImage('img');
+	//读取列表
+	// getOthRecordList();
+	
+    //关闭广告
+	$('.close').click(function() {
+		$('.close').hide();
+		$('.open_advert').hide();
+	});
+    //分享
+	$('#fenxiang').click(function() {
+		$('#fx_sm_div').show();
+	});
+	$('#fx_sm_div').click(function() {
+		$('#fx_sm_div').hide();
+	});
+});
+//图片软加载
+function lazyImage(img){ 
+	$(img).lazyload({
+			threshold : 200,
+			effect:'fadeIn',
+			failure_limit : 10
+	}); 
+}
+
+//渲染记录列表
+function getOthRecordList(){ 
+	if(null != data.goods_info && data.goods_info.length>0){ 
+		$(data.goods_info).each(function(index,bean){
+			var image = bean.goods_icons;
+			var proDetailUrl="goodDetail?goods_id="+bean.goods_id+"&phase="+bean.phase;
+			var jindu=(bean.now_money*100/bean.goods_money).toFixed(2);
+			var html=""; 
+            html +="<li class='w_goodsList_item'>";
+            if(index%2==0){
+             html +="<div id='padding' class='line_0'>";
+            }else{
+             html +="<div id='padding' class='line_f'>";
+            }
+            html +="<div class='com_pic'><a href='"+proDetailUrl+"'><img class='thisShopNewLazyImage' src='http://img.zailaiyidan.com/"+image+"' data-original='"+image+"'  /></a>";
+            if(bean.goods_money==10){
+            	html +="<div class='iocn10'>&nbsp;&nbsp;&nbsp;</div>";
+            }
+            html +="</div>";
+            html +="<div class='name'>(第"+bean.phase+"期)"+bean.goods_name+"</div>";
+            html +="<div style='margin-top:2px;color:#808080;'>总需人次："+bean.goods_money+"</div>";
+            html +="<div class='com_bottom'>";         
+            html +="<div class='bar'>";
+            html +="<div class='empty'>";
+            html +="<p class='wrap'>";
+            html +="<span class='br' style='width:"+jindu+"%;'><i class='color'></i></span>";
+            html +="</p>";
+            html +="<div class='lott'>开奖进度：<em>"+jindu+"%</em></div>";
+            html +="</div>";
+            html +="</div>";
+            html +="<div class='buy_utton'><a href='"+proDetailUrl+"'>立即购买</a></div>";
+            html +="</div>";
+            html +="</div>";
+            html +="</li>";
+   			$("#go_goods_list").append(html); 
+   			lazyImage('.thisShopNewLazyImage'); 
+		}); 
+	}
+}
+</script>
+</body></html>

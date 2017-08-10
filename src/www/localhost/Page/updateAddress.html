@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—修改地址</title>
+<link rel="icon" href="" type="image/x-icon">
+
+  <!--分享-->
+</head><body><link href="css/member_index.css" rel="stylesheet" type="text/css">
+<link href="css/mobile_alert.css" rel="stylesheet" type="text/css">
+
+
+   <div class="top">修改地址
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="land">
+      <ul>
+         <li style=" border-bottom:1px dotted #eee;">
+            <div class="wor">收货人</div>
+          <input type="text" id="name" value="" maxlength="10" placeholder="请输入姓名">
+         </li>
+         <li style=" border-bottom:1px dotted #eee;">
+            <div class="wor">手机号</div>
+          <input type="text" class="NumDecText" id="phone" value="" maxlength="11" placeholder="请输入手机号">
+         </li>
+      </ul>
+   </div>
+   <div class="padding"> <textarea class="wbk" id="address" placeholder="请填写详细地址"></textarea> </div>
+   <div class="mrdz">
+          <div class="wok">设为默认地址</div>
+          <input type="hidden" id="isDefault" value="false">
+          <div class="kg">
+             <a href="javascript:void(0);" class="kai" style="display:none;"><img src="images/kai_iocn.png" width="80" height="40"></a>
+             <a href="javascript:void(0);" class="guan"><img src="images/guan_iocn.png" width="80" height="40"></a>
+          </div>
+   </div>
+   
+   <div class="padding">
+      <div class="zf"><a href="javascript:void(0);" style=" font-size:20px;">确&nbsp;认&nbsp;修&nbsp;改</a></div>
+   </div>
+   
+	<div class="fixed_l" style="display:none;">
+	  <input type="hidden" id="redirectURL" value="">
+	  <div class="ccc"></div>
+	</div>
+
+<!--common begin-->
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+
+<script type="text/javascript">
+$.extend($, {
+	// 获取请求参数
+	getReq: function(name) {
+		var url = location.search;
+		if (url.indexOf("?") != -1) { 
+			var str = url.substr(1); 
+			strs = str.split("&"); 
+			for(var i = 0; i < strs.length; i++){ 
+				this[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]); 
+			}
+			return this[name];
+	   } 
+	   return null; 
+	}
+});
+var isDefault = 'false';
+$(function(){
+	// 填充表单数据
+	$("#name").val(decodeURI($.getReq("username")));
+	$("#phone").val($.getReq("phone"));
+	$("#address").html(decodeURI($.getReq("address")));
+	if($.getReq("normal")){
+		$('.guan').hide();
+		$('.kai').show();
+		$("#isDefault").val(true);
+	}
+
+    $(".NumDecText").keyup(function(){    
+            $(this).val($(this).val().replace(/[^0-9.]/g,''));    
+        }).bind("paste",function(){   
+            $(this).val($(this).val().replace(/[^0-9.]/g,''));     
+    }).css("ime-mode", "disabled"); 
+    //开
+	$('.guan').click(function(){ 
+		$('.guan').hide();
+		$('.kai').show();
+		$("#isDefault").val(true);
+	});
+	//关
+	$('.kai').click(function(){ 
+		$('.guan').show();
+		$('.kai').hide();
+		$("#isDefault").val(false);
+	});
+	//提交保存收货地址
+	$('.zf').click(function(){ 
+		addAdress();
+	});
+});
+//保存收货地址
+function addAdress(){ 
+	var name=$("#name").val();
+	var phone=$("#phone").val();
+	var address=$("#address").val();
+	var isDefault =$("#isDefault").val();
+	if(null== name || ''==name||'请输入姓名'==name){
+		 my_al2('昵称不能为空');
+		 return ;
+	}
+	if(null== phone || ''==phone){
+		 my_al2('联系号码不能为空');
+		 return ;
+	}
+	var reg = /^0?1[34578]\d{9}$/;
+	if(!reg.test(phone)){ 
+	 	my_al2('请输入正确的手机号码!');
+	 	return ;
+	}
+	if(null== address || ''==address){
+		 my_al2('收货地址不能为空');
+		 return ;
+	}
+	if(address.length>120){
+		 my_al2('收货地址太长');
+		  $("#address").val("");
+		 return ;
+	}
+	var ajaxurl = '/AccountManager/updateAddress';
+    $.ajax({
+		url : ajaxurl,
+		data : {
+			address_id : $.getReq("id"),
+			user_name : name,
+			user_phone : phone,
+			user_address : address,
+			is_normal :isDefault
+		},
+		async : false,
+		cache : false,
+		dataType : "JSON",
+		type : "POST",
+		success : function(dat) {
+			if(dat.code=="success"){
+				$('.ccc').html("修改成功,正在跳转...");
+				$('.fixed_l').addClass('Box_l');
+				$('.fixed_l').removeClass('SB_l');
+				$('.fixed_l').fadeIn(); 
+				setTimeout(function(){
+   					window.location.href="address";
+				}, 800); 
+			}else{
+				my_al2(dat.msg);
+			}
+		}
+	}); 
+}
+
+
+function my_su2(cont){
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').addClass('Box_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},1000);
+}
+	
+function my_al2(cont){
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').addClass('SB_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},2000);
+}
+</script>
+
+</body></html>

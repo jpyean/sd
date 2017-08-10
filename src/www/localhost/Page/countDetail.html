@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.klduobao.com/mobile/GoGoodsMobile_calculateDetail?batchId=1000653 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>计算详情</title>
+<link rel="icon" href="" type="image/x-icon">
+  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+
+   <div class="top">计算详情
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="rule.html">夺宝规则</a></div>
+   </div>
+   <div class="padding">
+     <div class="calculation">
+        <div class="title">计算公式</div>
+        <div>(截止实时前50条时间总和（数值A） ÷ 商品所需人次）取余数+10000001</div>
+     </div>
+   </div>
+   
+   <div class="num">
+      <ul>
+         <li style="color:#000; font-size:16px;">数值A</li>
+         <li style="color:#000; font-size:14px;">=&nbsp;&nbsp;截止该商品开奖时间点前最后50条全站参与记录时间总和</li>
+         <li style="color:#e2105a; font-size:16px;">
+            =&nbsp;&nbsp;<span id="sum"></span>
+            <a href="javascript:void(0);" class="zk">展开</a>
+            <a href="javascript:void(0);" class="sq">收起</a>
+         </li>
+      </ul>
+   </div>
+   <div class="num_xx">
+      <ul>
+         <li class="title">
+            <div class="n_time">夺宝时间</div>
+            <div class="n_name">用户账号</div>
+         </li>
+      </ul>
+      <ul id="q_content">
+      </ul>
+   </div>
+   
+   <div class="winning_results">
+      <div>计算结果</div>
+      <div>幸运号码：<span id="lunckNum"></span></div>
+   </div>
+
+	<!--common begin-->
+	<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+	<!-- <script type="text/javascript" src="json/countDetail.js"></script> -->
+<!-- 物品信息模板 -->
+<script id="recodeTmpl" type="text/x-jquery-tmpl">
+	 <li>
+      <div class="n_time" style="color:#999;">${index}&nbsp;&nbsp;${order_data_time}<span>(${order_time})</span></div>
+      <div class="n_name"><a href="">(ID:${uid})&nbsp;&nbsp;${user_name}</a></div>
+   </li>
+</script>
+
+<script type="text/javascript">
+$(function(){
+    //展开
+	$('.zk').click(function() {
+		$('.zk').hide();
+		$('.sq').show();
+		$("#q_content").show();
+	});
+    //收起
+	$('.sq').click(function() {
+		$('.sq').hide();
+		$('.zk').show();
+		$("#q_content").hide();
+	});
+
+  var sum = 0;
+  data.order_infos.forEach(function(value, i){
+    data.order_infos[i].index = i+1;
+    sum += Number(value.order_time);
+  });
+  $("#sum").html(sum);
+  $("#lunckNum").html(sum % data.goods_money + 10000001);
+  // 渲染模板数据
+  $("#q_content").html($("#recodeTmpl").tmpl(data.order_infos));
+});
+</script>
+
+</body></html>

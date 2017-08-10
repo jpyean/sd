@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.klduobao.com/mobile/GoGoodsMobile_showRecordDetail?goodsId=202721 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title></title>
+<link rel="icon" href="" type="image/x-icon">
+  <!--分享-->
+</head><body style=" background:#fff;"><link href="css/go_index.css" rel="stylesheet" type="text/css">
+
+   <!--头部-->
+   <div class="top">商品详情
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div style="background:#fff; padding:10px 20px;">
+      <div style=" color:#e2105a; height:40px; line-height:40px; border-bottom:1px solid #f0f0f0;">商品说明：</div>
+      <div id="goodName" style="padding:10px 0;"></div>
+   </div>
+   <div class="images_details">
+    <div style=" padding:5px 20px; color:#e2105a; line-height:40px;">图片详情：</div>
+      <ul id="imgUl">
+      </ul>
+   </div>
+
+<!--common begin-->
+  <script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="lib/jquery.lazyload.js"></script>
+  <!-- <script type="text/javascript" src="json/good_data.js"></script> -->
+<script>
+$().ready(function(){
+  $(".fx").click(function (){
+    $(".fx_sm").show();
+  })
+  $(".fx_sm").click(function (){
+    $(".fx_sm").hide();
+  })
+})
+</script>
+<script type="text/javascript">
+$(function(){
+  document.title = data.goods_info.goods_name + "-图文详情";
+  $("#goodName").html(data.goods_info.goods_name);
+  // data.goods_info.goods_icons.forEach(function(value, i){
+    $("#imgUl").append('<li><img src="http://img.zailaiyidan.com/' + data.goods_info.goods_icons + '" data-original="" style="display: block;"></li>');
+  // });
+	lazyImage('img');
+});
+function lazyImage(img){ 
+	$(img).lazyload({
+			threshold : 300,
+			effect:'fadeIn',
+			failure_limit : 10
+	}); 
+}
+</script>
+
+</body></html>

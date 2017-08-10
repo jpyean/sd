@@ -1,0 +1,8 @@
+@charset "utf-8";
+/* CSS Document */
+.fixed_l.Box_l { position:fixed; left:0; top:200px; background:#28bf60; height:60px; width:100%; z-index:88;}
+.fixed_l.Box_l .ccc { border:2px dashed #fff; width:300px; margin:0 auto; margin-top:8px; height:40px; line-height:40px; text-align:center; font-size:16px; color:#fff; -moz-border-radius:60px; -webkit-border-radius:60px; border-radius:60px; position:relative;}
+.fixed_l.Box_l .xxx { background:#fff; width:26px; margin:0 auto; margin-top:8px; height:26px; line-height:26px; text-align:center; font-size:24px; color:#fff; -moz-border-radius:60px; -webkit-border-radius:60px; border-radius:60px; position:absolute; left:160px; top:0px; color:#28bf60; display:block;}
+.fixed_l.SB_l { background:#ff4557; position:fixed; left:0; top:200px; height:60px; width:100%; z-index:88;}
+.fixed_l.SB_l .ccc { border:2px dashed #fff; width:300px; margin:0 auto; margin-top:8px; height:40px; line-height:40px; text-align:center; font-size:16px; color:#fff; -moz-border-radius:60px; -webkit-border-radius:60px; border-radius:60px; position:relative;}
+.fixed_l.SB_l .xxx { background:#fff; width:26px; margin:0 auto; margin-top:8px; height:26px; line-height:26px; text-align:center; font-size:24px; color:#fff; -moz-border-radius:60px; -webkit-border-radius:60px; border-radius:60px; position:absolute; left:160px; top:0px; color:#ff4557; display:block;}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.klduobao.com/mobile/GoGoodsMobile_userWinRecord?recordId=21069007 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="icon" href="http://www.klduobao.com/images/favicon.png" type="image/x-icon">
+
+<meta name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+<title>微店购物—中奖订单</title>
+<link rel="icon" href="http://www.klduobao.com/mobile/favicon.ico" type="image/x-icon">
+
+  <!--分享-->
+</head><body><link href="css/go_index.css" rel="stylesheet" type="text/css">
+<link href="css/mobile_alert.css" rel="stylesheet" type="text/css">
+
+   <div class="top">中奖订单
+      <div class="fh"><a href="javascript:history.go(-1);"><img src="images/fh_icon.png" width="48" height="48"></a></div>
+      <div class="fx" style=" width:100px;"><a href="user">用户中心</a></div>
+   </div>
+   <div class="info_display">
+      <ul class="center">
+         <li style="background:#FEFEFE;">
+            <div class="type" style="width: 88px;color: #FF0000;font-size: 16px;">温馨提示：</div>
+            <div class="info">首次中奖点击【添加地址】，保存收货地址后需要选择收货地址，再点击【确认收货地址】完成地址确认，客服QQ：4006566158(早上9：00-下午17：30 周日休息 可留言)</div>
+         </li>
+      </ul>
+   </div>
+   <!--收货人地址-->
+   <div class="consignee_information">
+      <ul id="addressList">
+      </ul>
+   </div>
+   <!--添加地址按钮-->
+   <div class="padding" id="add_address"><div class="address_button"><a href="javascript:void(0);"><img src="images/more_iocn.png" width="20" height="20">添加地址</a></div></div>
+   <div class="padding"> <textarea class="wbk" id="remark" placeholder="请填写备注信息"></textarea> </div>
+   <div class="padding" id="setAddressId"><div class="status_button"><a href="javascript:void(0);">确认收货地址</a></div></div>
+   <div class="order_info">
+      <div class="title">订单信息</div>
+      <ul id="order">
+         <!--正在计算-->
+         
+        </ul>
+      
+   </div>
+   <!--多变按钮-->
+	<!--提示信息-->
+	<div class="fixed_l" style="display:none;">
+	  <input type="hidden" id="redirectURL" value="">
+	  <input type="hidden" id="addressId" value="">
+	  <input type="hidden" id="orderstatus" value="">
+	  <div class="ccc"></div>
+	</div>
+
+<script type="text/javascript" src="lib/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.tmpl.min.js"></script>
+<!-- <script type="text/javascript" src="json/winningOrder.js"></script> -->
+<script id="addressTmpl" type="text/x-jquery-tmpl">
+<li>
+    <!--选择按钮-->
+    <div class="select_button">
+    	{{if index==0}}
+      	<a href="javascript:selectAddr(${address_id},${index});" class="selected">
+       		<img class="selectImg" id="addr_img_${index}" src="images/yrz_iocn.png" width="20" height="20">
+       	{{else}}
+       	<a href="javascript:selectAddr(${address_id},${index});">
+       		<img class="selectImg" id="addr_img_${index}" src="images/yrz_iocn_no.png" width="20" height="20">
+       	{{/if}}
+       	</a>
+    </div>
+    <!--中间信息-->
+    <div class="con_center">
+       <div class="name_con">
+          <div class="full_name">${user_name}</div>
+          <div class="contact_information">${user_phone}</div>
+       </div>
+       <div class="clear"></div>
+       <div class="lxdz">${user_address}</div>
+    </div>
+    <!--编辑-->
+    <div class="edit"><a href="updateAddress.html?id=${address_id}&username=${username}&phone=${user_phone}&address=${enAddress}" class="selected"><img src="images/bianji_iconfont.png" width="20" height="20"></a></div>
+ </li>
+</script>
+<script id="orderTmpl" type="text/x-jquery-tmpl">
+<li class="pri">
+    <div class="pic_goods"><img src="http://img.zailaiyidan.com/${goods_icon}"></div>
+    <div class="goods_right">
+       <div class="goods_name" style=" margin:0px;">(第${goods_phase}期)&nbsp;&nbsp;${goods_name}</div>
+       <div class="zrc"><span>总需：</span>${goods_money}人次</div>
+       <div class="cyrc_jl">
+          <div class="cyrc_left"><span>本期参与：</span><em>${user_buy_money}</em>人次</div>
+          <div class="cyrc_right"><a href="goodDetail?goods_id=${goods_id}&phase=${goods_phase}">查看详情</a></div>
+       </div>
+       <div class="clear"></div>
+       <div class="time_jl"><span>揭晓时间：</span><em style=" color:#999;">${lucky_time}</em></div>
+    </div>
+ </li>
+ 
+ <li>
+    <div class="type">订单状态</div>
+    <div class="info" style=" color:#e2105a;">等待填写收货地址</div>
+ </li>
+ <li>
+    <div class="type">联系卖家</div>
+    <div class="info" style=" color:#306cab;">${phone}</div>
+ </li>
+ <li>
+    <div class="type">订单编号</div>
+    <div class="info" style=" color:#306cab;">${order_id}</div>
+ </li>
+ <li>
+    <div class="type">下单时间</div>
+    <div class="info">${order_data_time}</div>
+ </li>
+</script>
+<script type="text/javascript">
+$(function(){
+	// 渲染地址列表
+	data.address_infos.forEach(function(item, i){
+		if(i == 0){
+			$('#addressId').val(item.address_id);
+		}
+		item["index"] = i;
+		item["enAddress"] = encodeURI(encodeURI(item["user_address"]));
+		item["username"] = encodeURI(encodeURI(item["user_name"]));
+	});
+	$("#addressList").html($("#addressTmpl").tmpl(data.address_infos));
+	// 渲染订单信息
+	data.order_info.phone = data.shop_info.shop_phone;
+	$("#order").html($("#orderTmpl").tmpl(data.order_info));
+
+    //添加地址点击事件
+	$('#add_address').click(function() {
+		addAddress();
+	});
+	//确认收货地址
+	$('#setAddressId').click(function() {
+		setAddress();
+	});
+	
+});
+
+//选择地址
+function selectAddr(id,index_,size){
+	$('#addressId').val(id);
+	$('.selectImg').attr('src','http://www.klduobao.com/images/mobile/yrz_iocn_no.png'); 
+	$('#addr_img_'+index_).attr('src','http://www.klduobao.com/images/mobile/yrz_iocn.png');
+}
+//添加地址
+function addAddress(){
+	// var currentUrl=  encodeURIComponent(window.location.href);
+	window.location.href = "addAddress.html";  
+}
+//设置收货地址
+function setAddress(){
+	var addressId = $("#addressId").val();
+	var remark = $("#remark").val();
+	if(null==addressId||""==addressId){
+		my_al2("请选择收货地址！");
+		return;
+	}
+	if(confirm("确认选择这个地址?")){
+		var ajaxurl = '/DeliverOrderManager/readyAddress'; 
+	    $.ajax({
+			url : ajaxurl,
+			data : {
+				order_id : data.order_info.order_id,
+				remarks : remark,
+				address_id :addressId
+			},
+			async : false,
+			cache : false,
+			dataType : "JSON",
+			type : "POST",
+			success : function(dat) {
+				$("#setAddressId").unbind("click");
+				if(dat.code == "success"){
+					$('.ccc').html("地址选择成功，正在刷新...");
+					$('.fixed_l').addClass('Box_l');
+					$('.fixed_l').removeClass('SB_l');
+					$('.fixed_l').fadeIn(); 
+					function getOut(){
+						window.location.href = "deliveryOrder?order_id="+data.order_info['order_id'];
+		 			}
+	  				var test = setTimeout(function(){
+	   						 getOut();
+					},300);
+				}else{
+					my_al2(dat.msg);
+				}
+			}
+		}); 
+	}
+}
+
+function my_su2(cont){
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').addClass('Box_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},1000);
+}
+	
+function my_al2(cont){
+		$('.fixed_l').removeClass('Box_l');
+		$('.fixed_l').removeClass('SB_l');
+		$('.fixed_l').addClass('SB_l');
+		$('.ccc').html(cont);
+		function showAndHide(){
+		 	$('.fixed_l').fadeOut(); 
+	    }
+	   	$('.fixed_l').fadeIn(); 
+	   	 var test = setTimeout(function(){
+       			 showAndHide();
+   		},2000);
+}
+</script>
+
+</body></html>
